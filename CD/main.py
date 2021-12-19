@@ -1,8 +1,12 @@
 
 from tkinter import *
 from tkinter import ttk
-from utils.taskTreeView import TaskTreeView
+from utils.taskwindow import TaskWindow
+
+# entry point of the application
+# create a ui window for checking tasks and setting sources 
+# further actions arise from button clicks in that ui window
 
 root = Tk()
-treeview = TaskTreeView(root)
+treeview = TaskWindow(root)
 root.mainloop()
