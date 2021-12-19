@@ -4,6 +4,10 @@ class Programs(Enum):
     Client = 1
     WebService = 2
 
+class Versions(Enum):
+    Release = 1
+    PreRelease = 2
+
 class Folders(Enum):
     UpdateFolder = 1
     LiveFolder = 2
@@ -22,70 +26,7 @@ class Environments(Enum):
 class Servers(Enum):
     DapsTS2 = "daps-ts-2"
     DemoTS2 = "demo-ts-2"
-    DapsTSG = "daps-tsg-2"
-
-
-#class Paths:
-#    def __init__(self):
-#    
-#        self.ClientLiveFolderPaths = {
-#            Environments.HbR : r"\\daps-ts-2\DEMO\Havenbedrijf\RE_Suite_TestJNO",
-#            Environments.Stek : r"\\daps-ts-2\DEMO\Stek\RE_Suite_TestJNO",
-#            Environments.Monumentenwacht: r"\\daps-ts-2\DEMO\Monumentenwacht\RE_Suite_TestJNO",
-#            Environments.DemoSecureRelease : r"\\daps-ts-2\DEMO\Demonstratie\Release_TestJNO",
-#            Environments.DemoSecurePreRelease : r"\\daps-ts-2\DEMO\Demonstratie\PreRelease_TestJNO",
-#            Environments.DemoDemoRelease : r"\\demo-ts-2\DEMO\Demonstratie\Release_TestJNO",
-#            Environments.DemoDemoPreRelease : r"\\demo-ts-2\DEMO\Demonstratie\PreRelease_TestJNO",
-#            Environments.BIMSpeed : r"\\demo-ts-2\DEMO\BIMSpeed\Re_Suite_TestJNO",
-#            Environments.Sandbox : r"\\demo-ts-2\DEMO\Sandbox\RE_Suite_TestJNO"
-#            }
-#            
-#        self.ClientUpdateFolderPaths = {
-#            Environments.HbR : r"\\daps-ts-2\DEMO\Havenbedrijf\Updates_TestJNO",
-#            Environments.Stek : r"\\daps-ts-2\DEMO\Stek\Updates",
-#            Environments.Monumentenwacht: r"\\daps-ts-2\DEMO\Monumentenwacht\RE_Suite_TestJNO",
-#            Environments.DemoSecureRelease : r"\\daps-ts-2\DEMO\Demonstratie\Updates\_Release",
-#            Environments.DemoSecurePreRelease : r"\\daps-ts-2\DEMO\Demonstratie\Updates\_PreRelease",
-#            Environments.DemoDemoRelease : r"\\demo-ts-2\DEMO\Demonstratie\Updates\_Release",
-#            Environments.DemoDemoPreRelease : r"\\demo-ts-2\DEMO\Demonstratie\Updates\_PreRelease",
-#            Environments.BIMSpeed : r"\\demo-ts-2\DEMO\BIMSpeed\Updates_TestJNO",
-#            Environments.Sandbox : r"\\demo-ts-2\DEMO\Sandbox\Updates_TestJNO"
-#            }
-#            
-#        self.WebServiceLiveFolderPaths = {
-#            Environments.HbR : r"\\daps-tsg-2\wwwroot\HBR\RE_Suite_WebService_TestJNO",
-#            Environments.Stek : r"\\daps-tsg-2\wwwroot\stek\WebService_TestJNO",
-#            Environments.Monumentenwacht: r"\\daps-tsg-2\wwwroot\Monumentenwacht\WebService_TestJNO",
-#            Environments.DemoSecureRelease : r"\\daps-tsg-2\wwwroot\Demonstratie\Release_TestJNO",
-#            Environments.DemoSecurePreRelease : r"\\daps-tsg-2\wwwroot\Demonstratie\PreRelease_TestJNO",
-#            Environments.DemoDemoRelease : r"\\demo-ts-2\wwwroot\Demonstratie\Release_TestJNO",
-#            Environments.DemoDemoPreRelease : r"\\demo-ts-2\wwwroot\Demonstratie\PreRelease_TestJNO",
-#            Environments.BIMSpeed : r"\\demo-ts-2\wwwroot\BIMSpeed\RE_Suite_WebService_TestJNO",
-#            #Environments.Sandbox : r"\\demo-ts-2\DEMO\Sandbox\Updates_TestJNO"
-#            }
-#            
-#        self.WebServiceUpdateFolderPaths = {
-#            Environments.HbR : r"\\daps-tsg-2\wwwroot\HBR\_update\TestJNO",
-#            Environments.Stek : r"\\daps-tsg-2\wwwroot\stek\WebService updates",
-#            Environments.Monumentenwacht: r"\\daps-tsg-2\wwwroot\Monumentenwacht\_updates\TestJNO",
-#            Environments.DemoSecureRelease : r"\\daps-tsg-2\wwwroot\Demonstratie\Updates\Release_TestJNO",
-#            Environments.DemoSecurePreRelease : r"\\daps-tsg-2\wwwroot\Demonstratie\PreRelease\WebService_updates",
-#            Environments.DemoDemoRelease : r"\\demo-ts-2\wwwroot\Demonstratie\Updates\Release_TestJNO",
-#            Environments.DemoDemoPreRelease : r"\\demo-ts-2\wwwroot\Demonstratie\PreRelease\WebService_updates",
-#            Environments.BIMSpeed : r"\\demo-ts-2\wwwroot\BIMSpeed\Updates_TestJNO",
-#            #Environments.Sandbox : r"\\demo-ts-2\DEMO\Sandbox\Updates_TestJNO"
-#            }
-#
-#        self.PathDict = {}
-#        self.PathDict[Programs.Client] = {}
-#        self.PathDict[Programs.Client][Folders.UpdateFolder] = self.ClientUpdateFolderPaths
-#        self.PathDict[Programs.Client][Folders.LiveFolder] = self.ClientLiveFolderPaths
-#        self.PathDict[Programs.WebService] = {}
-#        self.PathDict[Programs.WebService][Folders.UpdateFolder] = self.WebServiceUpdateFolderPaths
-#        self.PathDict[Programs.WebService][Folders.LiveFolder] = self.WebServiceLiveFolderPaths
-
-
-
+    DapsTSG2 = "daps-tsg-2"
 
 ClientSoftwareLiveFolderPaths = {
             Environments.HbR : r"\\daps-ts-2\DEMO\Havenbedrijf\RE_Suite_TestJNO",
