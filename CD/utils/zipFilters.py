@@ -2,8 +2,8 @@ from utils.paths import Programs
 from pprint import pprint
 import os
         
-def FilterDir(sourcepath, program):
-    print('Collecting files for zip...')
+def FilterDir(sourcepath, program, version):
+    print('Collecting files to zip for {} {}...'.format(program, version))
 
     result = []
     if program == str(Programs.Client):

@@ -14,13 +14,23 @@ class TaskTreeView:
     def __init__(self, parent):
         self.PathToSourceConfig = '../sourceconfig.txt'
         self.CreateWindow(parent)
-        
+    
+    def StartCopy(self):
+        tasks = self.get_checked(self.tree)
+        sourcePaths = self.GetSourceEntryValues()
+
+        #save the sources for quick reruns
+        self.SaveSourceConfig(sourcePaths)
+
+        updater = Updater() 
+        updater.Update(tasks, sourcePaths)
     
     def CreateWindow(self, parent):
-        self.root = parent
-        self.root.title("Tasks")
         
         self.rowcounter = 0
+
+        self.root = parent
+        self.root.title("Tasks")
 
         #create the content frame
         self.mainframe = ttk.Frame(self.root, padding="3 3 12 12")
@@ -49,15 +59,7 @@ class TaskTreeView:
         continuebutton.grid(row=self.rowcounter, sticky=W)
         self.rowcounter+=1
 
-    def StartCopy(self):
-        tasks = self.get_checked(self.tree)
-        sourcePaths = self.GetSourceEntryValues()
-
-        #save the sources for quick reruns
-        self.SaveSourceConfig(sourcePaths)
-
-        updater = Updater() 
-        updater.Update(tasks, sourcePaths)
+    
        
     def SaveSourceConfig(self, sourcePaths):
         with open(self.PathToSourceConfig, 'w') as outfile:
@@ -72,38 +74,45 @@ class TaskTreeView:
                 return sources
 
     def GetSourceEntryValues(self):
-        """
-        Returns sourcedirectories indexed by program
-        """
         sourcePaths = {}
-        for program,sourceEntry in self.SourceEntryLookup.items():
-            #extract value from entry
-            sourcePath = str(sourceEntry.Text.get())
-            sourcePaths[str(program)] = sourcePath
+        for version in Versions:
+            sourcePaths[str(version)] = {}
+            for program in Programs:
+                entry = self.SourceEntryLookup[str(version)][str(program)]
+                entryvalue = str(entry.Text.get())
+                sourcePaths[str(version)][str(program)] = entryvalue
         return sourcePaths
+
+    def CreateSourceEntryLookup(self):
+        sourceEntries = {}
+        for version in Versions:
+            sourceEntries[str(version)] = {}
+            for program in Programs:
+                sourceEntries[str(version)][str(program)] = None
+        return sourceEntries
 
     def CreateSourceEntries(self):
         #start a lookup
-        self.SourceEntryLookup = {}
+        self.SourceEntryLookup = self.CreateSourceEntryLookup()
         #read sourceconfig for fast loading of sources
         previousSources = self.ReadSourceConfig()
         #build entries for programs
-        for program in Programs:
-            #build label
-            label = ttk.Label(self.mainframe, text = str(program.name) + " source dir")
-            label.grid(row=self.rowcounter, sticky=W)
-            #build entry
-            entry = CustomEntry(self.mainframe)
-            entry.grid(row=self.rowcounter+1, sticky = (W,E))
-            #set entry value from sourceconfig
-            if previousSources is not None:
-                storedvalue = previousSources[str(program)]
-                entry.Text.set(storedvalue)
-            #add entry to lookup
-            self.SourceEntryLookup[program] = entry
-            self.rowcounter+=2
-    
-    
+        for version in Versions:
+            for program in Programs:
+                #build label
+                labeltext = "{} {} source dir".format(str(version.name), str(program.name))
+                label = ttk.Label(self.mainframe, text = labeltext)
+                label.grid(row=self.rowcounter, sticky=W)
+                #build entry
+                entry = CustomEntry(self.mainframe)
+                entry.grid(row=self.rowcounter+1, sticky = (W,E))
+                #set entry value from sourceconfig
+                if previousSources is not None:
+                    storedvalue = previousSources[str(version)][str(program)]
+                    entry.Text.set(storedvalue)
+                #add entry to lookup
+                self.SourceEntryLookup[str(version)][str(program)] = entry
+                self.rowcounter+=2
 
     def FillTree(self, tree):
         tree.insert("", "end", "1", text="Client")
