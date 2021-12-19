@@ -12,7 +12,7 @@ import json
 class TaskWindow:
 
     def __init__(self, parent):
-        self.PathToSourceConfigFile = '../sourceconfig.txt'
+        self.PathToSourceConfigFile = '../sourceconfig.txt' #improve this later
         self.CreateWindow(parent)
     
     def StartCopy(self):
