@@ -9,17 +9,17 @@ from utils.updater import *
 import json
 
 
-class TaskTreeView:
+class TaskWindow:
 
     def __init__(self, parent):
-        self.PathToSourceConfig = '../sourceconfig.txt'
+        self.PathToSourceConfigFile = '../sourceconfig.txt'
         self.CreateWindow(parent)
     
     def StartCopy(self):
-        tasks = self.get_checked(self.tree)
+        tasks = self.GetCheckedTasks(self.tree)
         sourcePaths = self.GetSourceEntryValues()
 
-        #save the sources for quick reruns
+        #save entered sources in sourceconfig file for quick reruns
         self.SaveSourceConfig(sourcePaths)
 
         updater = Updater() 
@@ -62,14 +62,14 @@ class TaskTreeView:
     
        
     def SaveSourceConfig(self, sourcePaths):
-        with open(self.PathToSourceConfig, 'w') as outfile:
+        with open(self.PathToSourceConfigFile, 'w') as outfile:
             json.dump(sourcePaths, outfile)
 
     def ReadSourceConfig(self):
-        if not os.path.isfile(self.PathToSourceConfig):
+        if not os.path.isfile(self.PathToSourceConfigFile):
             return None
         else:
-            with open(self.PathToSourceConfig) as json_file:
+            with open(self.PathToSourceConfigFile) as json_file:
                 sources = json.load(json_file)
                 return sources
 
@@ -122,7 +122,7 @@ class TaskTreeView:
         for env in Environments:
             tree.insert("2", "end", "2."+str(env.value), text=str(env.name))
         
-    def get_checked(self, tree):
+    def GetCheckedTasks(self, tree):
         checked = []
         def rec_get_checked(item):
             if tree.tag_has('checked', item):
