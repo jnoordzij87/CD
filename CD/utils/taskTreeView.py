@@ -12,6 +12,7 @@ import json
 class TaskTreeView:
 
     def __init__(self, parent):
+        self.PathToSourceConfig = '../sourceconfig.txt'
         self.CreateWindow(parent)
         
     
@@ -43,11 +44,6 @@ class TaskTreeView:
         quitbutton.grid(row=self.rowcounter, sticky=W)
         self.rowcounter+=1
         
-        #create print button
-        printbutton = ttk.Button(self.mainframe, text="Print", command=self.Print)
-        printbutton.grid(row=self.rowcounter, sticky=W)
-        self.rowcounter+=1
-        
         #create continue button
         continuebutton = ttk.Button(self.mainframe, text="StartCopy", command=self.StartCopy)
         continuebutton.grid(row=self.rowcounter, sticky=W)
@@ -58,14 +54,22 @@ class TaskTreeView:
         sourcePaths = self.GetSourceEntryValues()
 
         #save the sources for quick reruns
-        self.SaveSources(sourcePaths)
+        self.SaveSourceConfig(sourcePaths)
 
         updater = Updater() 
         updater.Update(tasks, sourcePaths)
        
-    def SaveSources(self, sourcePaths):
-        with open('sourceconfig.txt', 'w') as outfile:
+    def SaveSourceConfig(self, sourcePaths):
+        with open(self.PathToSourceConfig, 'w') as outfile:
             json.dump(sourcePaths, outfile)
+
+    def ReadSourceConfig(self):
+        if not os.path.isfile(self.PathToSourceConfig):
+            return None
+        else:
+            with open(self.PathToSourceConfig) as json_file:
+                sources = json.load(json_file)
+                return sources
 
     def GetSourceEntryValues(self):
         """
@@ -82,7 +86,7 @@ class TaskTreeView:
         #start a lookup
         self.SourceEntryLookup = {}
         #read sourceconfig for fast loading of sources
-        sources = self.ReadSourceConfig()
+        previousSources = self.ReadSourceConfig()
         #build entries for programs
         for program in Programs:
             #build label
@@ -92,16 +96,14 @@ class TaskTreeView:
             entry = CustomEntry(self.mainframe)
             entry.grid(row=self.rowcounter+1, sticky = (W,E))
             #set entry value from sourceconfig
-            storedvalue = sources[str(program)]
-            entry.Text.set(storedvalue)
+            if previousSources is not None:
+                storedvalue = previousSources[str(program)]
+                entry.Text.set(storedvalue)
             #add entry to lookup
             self.SourceEntryLookup[program] = entry
             self.rowcounter+=2
     
-    def ReadSourceConfig(self):
-        with open('sourceconfig.txt') as json_file:
-            sources = json.load(json_file)
-            return sources
+    
 
     def FillTree(self, tree):
         tree.insert("", "end", "1", text="Client")
@@ -120,10 +122,6 @@ class TaskTreeView:
                 rec_get_checked(ch)
         rec_get_checked('')
         return checked
-
-    def Print(self):
-        checkeditems = self.get_checked(self.tree)
-        print(checkeditems)
     
     def Quit(self):
         print('quit')
