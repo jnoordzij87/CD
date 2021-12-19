@@ -33,8 +33,8 @@ class Updater:
         self.Sources = sources
         
         #stop if no working vpn connection
-        #if not self.TestVPN():
-        #    return
+        if not self.TestVPN():
+            return
         
         #create ZIP files 
         self.CreateZipFiles()
@@ -47,15 +47,12 @@ class Updater:
     
     def TestVPN(self):
         print('Testing VPN...')
-        if not self.CheckConnection():
+        if not os.path.exists(r"\\demo-ts-2\DEMO\Demonstratie"):
             print('...VPN not working, aborted!')
             return False
         else:
             print('...working.')
             return True
-       
-    def CheckConnection(self):
-        return os.path.exists(r"\\demo-ts-2\DEMO\Demonstratie")
 
     def ParseAndExecuteTask(self, taskId):
     
