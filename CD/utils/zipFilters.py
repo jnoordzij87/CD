@@ -4,13 +4,11 @@ import os
         
 def FilterDir(taskObj):
     print('Collecting files to zip for {} {}...'.format(taskObj.Program, taskObj.Version))
-
     result = []
     if program == str(Programs.Client):
         result = FilterDirForClientSoftware(task.BinSourcePath)
     elif program == str(Programs.WebService):
         result = FilterDirForWebService(task.BinSourcePath)
-
     print('...done.')
     return result
    
@@ -37,7 +35,6 @@ def FilterDirForWebService(sourcepath):
             result.append(abspath)
             #get everything inside the folder
             result.extend(GetAllFolderContent(abspath))
-        
     return result
 
 def FilterDirForClientSoftware(sourcepath):
