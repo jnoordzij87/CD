@@ -45,19 +45,16 @@ class Updater:
             return True
 
     def ExecuteTaskOnServer(self, task):
-    
-        #if not self.IsValidTask(taskId): #must be moved to before trackObj creation
-        #    return
-        
+
         print('Starting distribution for', program, environment)
 
-        #now we have timestamp, we can build full path of update folder
+        #get updatefolderpath and zipfilepath from timestamp
         task.UpdateFolderPath = task.GetUpdateFolderPath(timeSuffix)
-        #now we can build the zip dest fullpath, which begins with the update folder and ends with the created zipfile name containing the timestamp
         task.ZipFileCopyDstPath = os.path.join(updateFolder, os.path.basename(task.ZipFileCopySrcPath))
 
-        #copy zip to server, only once... explain
-        hasProgramUpdateBeenCopiedToServer = self.HasProgramUpdateBeenCopiedToServer(task.Program, task.Version, task.Server)
+        #copy zip to server, but only once per program/version/server
+        #if 2 envs on 1 server need the same binaries, copy zip once and use for both envs
+        hasProgramUpdateBeenCopiedToServer = self.HasProgramUpdateBeenCopiedToServer(task)
         copySuccess = False
         doUnzip = False
         if hasProgramUpdateBeenCopiedToServer:
@@ -84,12 +81,16 @@ class Updater:
         
         print("---END OF TASK---")
 
-    def HasProgramUpdateBeenCopiedToServer(self, program, version, server):
+    def HasProgramUpdateBeenCopiedToServer(self, task):
+        program = task.Program
+        version = task.Version
+        server = task.Server
         #copied zips are stored like this: CopiedZips[program][server] = zip_dst_fpath
         if not program in self.CopiedZips or not version in self.CopiedZips[program] or not server in self.CopiedZips[program][version]:
             return False
         else:
             return True
+        #other option: iterate all tasks for task.HasZipBeenCopiedToServer flag
 
     def UnzipOnServer(self, zipfile, unpackdir):
         server = self.GetServerFromPath(zipfile)
@@ -195,6 +196,4 @@ class Updater:
         print(result)
         return result
         
-    def IsValidTask(self, taskId):
-        #tasks should be in form of 1.1 / 1.2 / etc
-        return ("." in taskId)
+    

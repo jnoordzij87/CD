@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 from utils.updater import *
 import json
-from utils.tasktracker import *
+from utils.taskdata import *
 
 
 class TaskWindow:
@@ -16,30 +16,32 @@ class TaskWindow:
         self.PathToSourceConfigFile = '../sourceconfig.txt' #improve this later
         self.CreateWindow(parent)
 
-    def ParseTasks(self, tasks):
-        #checkedTasks are a list of treenode itentifiers, like 1.1, 1.2
+    def ParseTasks(self, taskIds):
+        #taskIds are a list of treenode itentifiers, like 1.1, 1.2
         parsedTasks = []
-        for task in tasks:
-            parsedTasks.append(self.ParseTask(task))
+        for taskId in taskIds:
+            if self.IsValidTask(taskId):
+                parsedTasks.append(self.ParseTask(taskId))
         return parsedTasks
 
-    def ParseTask(self, task):
-        trackObj = TaskTracker(task)
-        #since entries reside in dict indexed by version, program
-        #we can reference the sourceentry to the task
-        #dict is indexed as strings, otherwise read/write to sourceconfig.txt not possible
-        relatedEntry = self.SourceEntryLookup[str(trackObj.Version)][str(trackObj.Program)]
-        trackObj.SetBinSourcePath(str(relatedEntry.Text.get()))
-        return trackObj
+    def ParseTask(self, taskId):
+        taskData = TaskData(taskId)
+        relatedEntry = self.SourceEntryLookup[str(taskData.Version)][str(taskData.Program)]
+        taskData.SetBinSourcePath(str(relatedEntry.Text.get()))
+        return taskData
 
-    def StartCopy(self):
+    def IsValidTask(self, taskId):
+        #taskIds should be in form of 1.1 / 1.2 / etc
+        return ("." in taskId)
+
+    def OnStartCopyButtonClicked(self):
         
         #get checked tasks and parse 
         checkedTasks = self.GetCheckedTasks(self.tree)
         tasks = self.ParseTasks(checkedTasks)
 
         #save entered sources in sourceconfig file for quick reruns
-        sourcePaths = self.GetSourceEntryValues() #this can probable be improved so that we dont need a second dict
+        sourcePaths = self.GetSourceEntryValues()
         self.SaveSourceConfig(sourcePaths)
 
         #pass tasks to updater
@@ -129,7 +131,7 @@ class TaskWindow:
         self.rowcounter+=1
         
         #create continue button
-        continuebutton = ttk.Button(self.mainframe, text="StartCopy", command=self.StartCopy)
+        continuebutton = ttk.Button(self.mainframe, text="StartCopy", command=self.OnStartCopyButtonClicked)
         continuebutton.grid(row=self.rowcounter, sticky=W)
         self.rowcounter+=1
 
