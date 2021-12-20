@@ -1,10 +1,8 @@
 from utils.paths import *
 
-class TaskTracker:
+class TaskData:
 
     def __init__(self, taskId):
-        
-        programId, envId = taskId.split(".")
 
         #things to track
         self.Program = None
@@ -19,12 +17,12 @@ class TaskTracker:
         self.HasZipBeenCopiedToServer = None
 
         #first initialisation
+        programId, envId = taskId.split(".")
         self.Program = Programs(int(programId))
         self.Environment = Environments(int(envId))
         self.Version = self.GetVersion()
         self.Server = self.GetServer()
         self.LiveFolderPath = self.GetLiveFolderPath()
-
 
     def GetLiveFolderPath(self):
         if self.Program == Programs.Client:
@@ -32,7 +30,6 @@ class TaskTracker:
         elif self.Program == Programs.WebService:
             return WebServiceLiveFolderPaths[self.Environment]
         #todo : add RE_Suite service etc
-        
 
     def GetUpdateFolderPath(self, timestamp):
         
