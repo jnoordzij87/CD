@@ -7,7 +7,7 @@ import glob
 from shutil import *
 import subprocess
 from subprocess import *
-import utils.unzipper
+from utils.unzipper import *
 from utils.zipFilters import *
 import utils.zipBuilder
 
@@ -71,7 +71,7 @@ class Updater:
         #unzip on server
         if doUnzip:
             #get the file to unzip
-            fileToUnzip = self.CopiedZips[program][server]
+            fileToUnzip = self.CopiedZips[program][version][server]
             
             #unzip into update folder
             print('Proceeding to unzip in update folder: ', environment, program)
@@ -93,8 +93,8 @@ class Updater:
 
     def UnzipOnServer(self, zipfile, unpackdir):
         server = self.GetServerFromPath(zipfile)
-        unzipper = Unzipper.Unzipper()
-        unzipper.UnzipOnServer(server, zipfile, unpackdir)
+        unzipperObj = Unzipper()
+        unzipperObj.UnzipOnServer(server, zipfile, unpackdir)
 
     def CopyZipToServer(self, task):
         copysrc = task.ZipFileCopySrcPath
