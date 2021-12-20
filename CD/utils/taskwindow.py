@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 from utils.updater import *
 import json
+from utils.tasktracker import *
 
 
 class TaskWindow:
@@ -14,53 +15,37 @@ class TaskWindow:
     def __init__(self, parent):
         self.PathToSourceConfigFile = '../sourceconfig.txt' #improve this later
         self.CreateWindow(parent)
-    
+
+    def ParseTasks(self, tasks):
+        #checkedTasks are a list of treenode itentifiers, like 1.1, 1.2
+        parsedTasks = []
+        for task in tasks:
+            parsedTasks.append(self.ParseTask(task))
+        return parsedTasks
+
+    def ParseTask(self, task):
+        trackObj = TaskTracker(task)
+        #since entries reside in dict indexed by version, program
+        #we can reference the sourceentry to the task
+        #dict is indexed as strings, otherwise read/write to sourceconfig.txt not possible
+        relatedEntry = self.SourceEntryLookup[str(trackObj.Version)][str(trackObj.Program)]
+        trackObj.SetBinSourcePath(str(relatedEntry.Text.get()))
+        return trackObj
+
     def StartCopy(self):
-        tasks = self.GetCheckedTasks(self.tree)
-        sourcePaths = self.GetSourceEntryValues()
+        
+        #get checked tasks and parse 
+        checkedTasks = self.GetCheckedTasks(self.tree)
+        tasks = self.ParseTasks(checkedTasks)
 
         #save entered sources in sourceconfig file for quick reruns
+        sourcePaths = self.GetSourceEntryValues() #this can probable be improved so that we dont need a second dict
         self.SaveSourceConfig(sourcePaths)
 
+        #pass tasks to updater
         updater = Updater() 
-        updater.Update(tasks, sourcePaths)
-    
-    def CreateWindow(self, parent):
-        
-        self.rowcounter = 0
+        updater.Update(tasks)
 
-        self.root = parent
-        self.root.title("Tasks")
-
-        #create the content frame
-        self.mainframe = ttk.Frame(self.root, padding="3 3 12 12")
-        self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
-        
-        #create the treeview
-        self.tree = CheckboxTreeview(self.mainframe)
-        self.tree.grid(column=0, row=self.rowcounter, sticky=W)
-        self.rowcounter+=1
-
-        #fill the tree
-        self.FillTree(self.tree)
-
-        #create labels and entries for sources
-        self.CreateSourceEntries()
-        
-        #create quit button
-        quitbutton = ttk.Button(self.mainframe, text="Quit", command=self.Quit)
-        quitbutton.grid(row=self.rowcounter, sticky=W)
-        self.rowcounter+=1
-        
-        #create continue button
-        continuebutton = ttk.Button(self.mainframe, text="StartCopy", command=self.StartCopy)
-        continuebutton.grid(row=self.rowcounter, sticky=W)
-        self.rowcounter+=1
-
-    
-       
     def SaveSourceConfig(self, sourcePaths):
         with open(self.PathToSourceConfigFile, 'w') as outfile:
             json.dump(sourcePaths, outfile)
@@ -114,11 +99,50 @@ class TaskWindow:
                 self.SourceEntryLookup[str(version)][str(program)] = entry
                 self.rowcounter+=2
 
+    def CreateWindow(self, parent):
+        
+        self.rowcounter = 0
+
+        self.root = parent
+        self.root.title("Tasks")
+
+        #create the content frame
+        self.mainframe = ttk.Frame(self.root, padding="3 3 12 12")
+        self.mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+        
+        #create the treeview
+        self.tree = CheckboxTreeview(self.mainframe)
+        self.tree.grid(column=0, row=self.rowcounter, sticky=W)
+        self.rowcounter+=1
+
+        #fill the tree
+        self.FillTree(self.tree)
+
+        #create labels and entries for sources
+        self.CreateSourceEntries()
+        
+        #create quit button
+        quitbutton = ttk.Button(self.mainframe, text="Quit", command=self.Quit)
+        quitbutton.grid(row=self.rowcounter, sticky=W)
+        self.rowcounter+=1
+        
+        #create continue button
+        continuebutton = ttk.Button(self.mainframe, text="StartCopy", command=self.StartCopy)
+        continuebutton.grid(row=self.rowcounter, sticky=W)
+        self.rowcounter+=1
+
     def FillTree(self, tree):
+        #make node for client
         tree.insert("", "end", "1", text="Client")
+        #make subnodes for environment 
         for env in Environments:
             tree.insert("1", "end", "1."+str(env.value), text=str(env.name))
+
+        #make node for webservice
         tree.insert("", "end", "2", text="WebService")
+        #make subnodes for environments
         for env in Environments:
             tree.insert("2", "end", "2."+str(env.value), text=str(env.name))
         
@@ -139,7 +163,7 @@ class TaskWindow:
         
 class CustomEntry(ttk.Entry):
     """
-    a dynamically creatable entry for which the value can be obtained
+    A dynamically creatable entry for which the value can be obtained
     without a hardcoded variable bound to it
     """
     def __init__(self, master = None, **options):
