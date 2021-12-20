@@ -2,14 +2,14 @@ from utils.paths import Programs
 from pprint import pprint
 import os
         
-def FilterDir(sourcepath, program, version):
-    print('Collecting files to zip for {} {}...'.format(program, version))
+def FilterDir(taskObj):
+    print('Collecting files to zip for {} {}...'.format(taskObj.Program, taskObj.Version))
 
     result = []
     if program == str(Programs.Client):
-        result = FilterDirForClientSoftware(sourcepath)
+        result = FilterDirForClientSoftware(task.BinSourcePath)
     elif program == str(Programs.WebService):
-        result = FilterDirForWebService(sourcepath)
+        result = FilterDirForWebService(task.BinSourcePath)
 
     print('...done.')
     return result
