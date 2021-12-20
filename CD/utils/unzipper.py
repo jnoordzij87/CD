@@ -2,38 +2,23 @@ import os
 
 class Unzipper:
 
-    def UnzipOnServer(self, server, srczip, dstdir):
-        
-        print('Sending unzip command to server...')
+    def UnzipOnServer(self, task):
 
-        print('Src: ', srczip)
-        print('Dst: ', dstdir)
-        print('Server: ', server)
+        unzipSrc = task.ZipFileCopyDstPath
+        unzipDst = task.UpdateFolderPath
+        server = task.Server
+
+        print('Proceeding to unzip in update folder: ', task.Program, task.Environment)
+        print('Sending unzip command to server...')
+        print('Src: ', unzipSrc)
+        print('Dst: ', unzipDst)
 
         #get path to unzip.bat
         batpath = r"c:\users\josn\desktop\cd\unzip.bat"
         
         #call unzip bat, which does powershell unzip on server
-        cmd = r"%s %s %s %s" % (batpath, srczip, dstdir, server)
+        cmd = r"%s %s %s %s" % (batpath, unzipSrc, unzipDst, server)
         os.system(cmd)
         
         print('...unzip complete.')
         
-
-##TEST VALUES
-#batpath = r"c:\users\josn\desktop\cd\tests\unzip.bat"
-#src = r"c:\temp\test.zip"
-#dst = r"c:\temp\jnotest"
-#server = "\\" + "demo-ts-2"
-#cmd = r"%s %s %s" % (batpath, src, dst)
-#import os
-#os.system(cmd)
-#
-##TEST VALUES WITH DYNAMIC SERVER
-#batpath = r"c:\users\josn\desktop\cd\unzip.bat"
-#src = r"c:\temp\test.zip"
-#dst = r"c:\temp\jnotest"
-#server = "demo-ts-2"
-#cmd = r"%s %s %s %s" % (batpath, src, dst, server)
-#import os
-#os.system(cmd)

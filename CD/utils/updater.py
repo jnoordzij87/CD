@@ -9,14 +9,10 @@ import subprocess
 from subprocess import *
 from utils.unzipper import *
 from utils.zipFilters import *
-import utils.zipBuilder
+from utils.zipBuilder import *
 
 class Updater:
 
-    def __init__(self):
-        self.CopiedZips = {}
-        pass
-    
     def Update(self, tasks):
         
         self.StartTime = self.GetTime()
@@ -27,7 +23,8 @@ class Updater:
             return
         
         #create ZIP files 
-        self.CreateZipFiles()
+        zipBuilderObj = ZipBuilder(tasks)
+        zipBuilderObj.CreateZipFiles()
         
         #execute task on server 
         for task in self.Tasks:
@@ -46,34 +43,30 @@ class Updater:
 
     def ExecuteTaskOnServer(self, task):
 
-        print('Starting distribution for', program, environment)
+        print('Starting distribution for', task.Program, task.Environment)
 
         #get updatefolderpath and zipfilepath from timestamp
         task.UpdateFolderPath = task.GetUpdateFolderPath(timeSuffix)
         task.ZipFileCopyDstPath = os.path.join(updateFolder, os.path.basename(task.ZipFileCopySrcPath))
 
         #copy zip to server, but only once per program/version/server
-        #if 2 envs on 1 server need the same binaries, copy zip once and use for both envs
-        hasProgramUpdateBeenCopiedToServer = self.HasProgramUpdateBeenCopiedToServer(task)
-        copySuccess = False
+        #i.e. if 2 envs on 1 server need the same binaries, copy zip once and use for both envs
+        copiedBefore, fileToUnzip = self.HasProgramBeenCopiedToServer(task)
         doUnzip = False
-        if hasProgramUpdateBeenCopiedToServer:
+        if copiedBefore:
             #copying not needed, proceed to unzip file
             doUnzip = True
         else:
             #do copy
             copySuccess = self.CopyZipToServer(task)
+            #proceed with unzip if copy successful
             doUnzip = copySuccess
             
         #unzip on server
         if doUnzip:
-            #get the file to unzip
-            fileToUnzip = self.CopiedZips[program][version][server]
-            
-            #unzip into update folder
-            print('Proceeding to unzip in update folder: ', environment, program)
-            self.UnzipOnServer(fileToUnzip, updateFolder)
-            
+            unzipperObj = Unzipper()
+            unzipperObj.UnzipOnServer(task)
+
             #TODO NEXT:
             #unzip into live folder
             #print('Proceeding to unzip in update folder: ', environment, program)
@@ -81,114 +74,42 @@ class Updater:
         
         print("---END OF TASK---")
 
-    def HasProgramUpdateBeenCopiedToServer(self, task):
-        program = task.Program
-        version = task.Version
-        server = task.Server
-        #copied zips are stored like this: CopiedZips[program][server] = zip_dst_fpath
-        if not program in self.CopiedZips or not version in self.CopiedZips[program] or not server in self.CopiedZips[program][version]:
-            return False
-        else:
-            return True
-        #other option: iterate all tasks for task.HasZipBeenCopiedToServer flag
-
-    def UnzipOnServer(self, zipfile, unpackdir):
-        server = self.GetServerFromPath(zipfile)
-        unzipperObj = Unzipper()
-        unzipperObj.UnzipOnServer(server, zipfile, unpackdir)
+    def HasProgramBeenCopiedToServer(self, thistask):
+        for task in self.Tasks:
+            sameProgram = task.Program == thistask.Program
+            sameVersion = task.Version == thistask.Verion
+            sameServer = task.Server == thistask.Server
+            if task.HasZipBeenCopiedToServer and sameProgram and sameVersion and sameServer:
+                #found match
+                return true, task.ZipFileCopyDstPath
+        #if we are here, no match
+        return false, None
 
     def CopyZipToServer(self, task):
         copysrc = task.ZipFileCopySrcPath
         copydst = task.ZipFileCopyDstPath
-        program = task.Program
-        version = task.Version
-        server = task.Server
         
-        success = False
-        
-        #copy zip to server
-        copysuccess = self.CopyWithXcopy(copysrc, copydst)
+        #ensure copydst exists
+        os.makedirs(os.path.dirname(copydst), exist_ok=True)
 
-        if copysuccess:
-            success = True
-
-            #store the zip location
-            if not program in self.CopiedZips:
-                self.CopiedZips[program] = {}
-            if not version in self.CopiedZips[program]:
-                self.CopiedZips[program][version] = {}
-            self.CopiedZips[program][version][server] = zip_dst_fpath
-                
-        return success
-
-    def CopyWithXcopy(self, zip_src_fpath, zip_dst_fpath):
-    
         print('Copying ZIP to update folder...')
-        
-        #ensure zip_dest_fpath exists
-        os.makedirs(os.path.dirname(zip_dst_fpath), exist_ok=True)
-        
-        #keep track of success
+        print('xcopy src:', copysrc)
+        print('xcopy dst:', copydst)
+        print('filesize:', os.path.getsize(copysrc))
+
         success = False
-            
         try:
-            #copy with xcopy
-            print('xcopy src:', zip_src_fpath)
-            print('xcopy dst:', zip_dst_fpath)
-            print('filesize:', os.path.getsize(zip_src_fpath) )
-            subprocess.call('xcopy.exe "%s" "%s*" /q /j' % (zip_src_fpath, zip_dst_fpath))
+            subprocess.call('xcopy.exe "%s" "%s*" /q /j' % (copysrc, copydst))
+            #success
             success = True
+            task.HasZipBeenCopiedToServer = True
         except Exception as e:
             print('ERROR ----- Exception while copying ZIP to update folder. Be sure to check that your VPN is working correctly. Exception message: ' + str(e))
-        
         if success:
             print('...complete. ')
-        
+
         return success
 
-    def IsMakingZipFileNecessary(self, task):
-        #only necessary if there is not already a zipfile in lookup for this program and version
-        version = task.Version
-        program = task.Program
-        if not version in self.CreatedZipFilesByVersionProgram or not program in self.CreatedZipFilesByVersionProgram[version]:
-            return True
-        else:
-            return False
-
-    def CreateZipFiles(self):
-        #make a lookup for created zipfiles so we can access them later
-        self.CreatedZipFilesByVersionProgram = {} #will this remain necessary?
-        for task in self.Tasks:
-            if self.IsMakingZipFileNecessary(task):
-                binarysource = task.BinSourcePath
-                #get files to zip
-                filesToZip = FilterDir(task)
-                #create zip
-                zipFile = self.CreateZipFile(task, filesToZip)
-                #add to lookup
-                if not version in self.CreatedZipFilesByVersionProgram:
-                    self.CreatedZipFilesByVersionProgram[version] = {}  
-                    self.CreatedZipFilesByVersionProgram[version][program] = zipFile
-                #store reference to zipfile location
-                task.ZipFileCopySrcPath = zipFile.filename
-            else:
-                #store reference to zipfile location
-                task.ZipFileCopySrcPath = self.CreatedZipFilesByVersionProgram[version][program]
-                    
-            
-    def CreateZipFile(self, task, filesToZip):
-        print("Building ZIP for {} {} ...".format(task.Program, task.Version))
-        zipfilepath = os.path.join(task.BinSourcePath, (self.StartTime + ".zip"))
-        zf = ZipFile(zipfilepath, 'w')
-        for file in filesToZip:
-            #get archivename (i.e. filepath without zip root)
-            archivename = file.split(sourcepath)[-1]
-            #add to zip 
-            zf.write(file, archivename) 
-        zf.close()
-        print('...complete')
-        return zf
-    
     def GetTime(self):
         date = datetime.today().strftime('%Y%m%d')
         time = datetime.today().strftime('%H%M')

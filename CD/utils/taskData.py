@@ -14,7 +14,8 @@ class TaskData:
         self.LiveFolderPath = None
         self.ZipFileCopySrcPath = None
         self.ZipFileCopyDstPath = None
-        self.HasZipBeenCopiedToServer = None
+        self.HasCreatedZip = False
+        self.HasZipBeenCopiedToServer = False
 
         #first initialisation
         programId, envId = taskId.split(".")
@@ -32,13 +33,11 @@ class TaskData:
         #todo : add RE_Suite service etc
 
     def GetUpdateFolderPath(self, timestamp):
-        
         if self.Program == Programs.Client:
             updatefolderbase = ClientSoftwareUpdateFolderPaths[self.Environment]
         elif self.Program == Programs.WebService:
             updatefolderbase = WebServiceUpdateFolderPaths[self.Environment]
         #todo : add RE_Suite service etc
-
         return os.path.join(updatefolderbase, timestamp)
 
     def GetServer(self):
