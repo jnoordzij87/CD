@@ -68,9 +68,9 @@ WebServiceUpdateFolderPaths = {
             Environments.HbR : r"\\daps-tsg-2\wwwroot\HBR\_update\TestJNO",
             Environments.Stek : r"\\daps-tsg-2\wwwroot\stek\WebService updates",
             Environments.Monumentenwacht: r"\\daps-tsg-2\wwwroot\Monumentenwacht\_updates\TestJNO",
-            Environments.DemoSecureRelease : r"\\daps-tsg-2\wwwroot\Demonstratie\Updates\Release_TestJNO",
+            Environments.DemoSecureRelease : r"\\daps-tsg-2\wwwroot\Demonstratie\Release\WebService_updates",
             Environments.DemoSecurePreRelease : r"\\daps-tsg-2\wwwroot\Demonstratie\PreRelease\WebService_updates",
-            Environments.DemoDemoRelease : r"\\demo-ts-2\wwwroot\Demonstratie\Updates\Release_TestJNO",
+            Environments.DemoDemoRelease : r"\\demo-ts-2\wwwroot\Demonstratie\Release\WebService_updates",
             Environments.DemoDemoPreRelease : r"\\demo-ts-2\wwwroot\Demonstratie\PreRelease\WebService_updates",
             Environments.BIMSpeed : r"\\demo-ts-2\wwwroot\BIMSpeed\Updates_TestJNO",
             #Environments.Sandbox : r"\\demo-ts-2\DEMO\Sandbox\Updates_TestJNO"
