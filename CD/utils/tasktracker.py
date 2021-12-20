@@ -23,7 +23,6 @@ class TaskTracker:
         self.Environment = Environments(int(envId))
         self.Version = self.GetVersion()
         self.Server = self.GetServer()
-        self.UpdateFolderPath = self.GetUpdateFolderPath()
         self.LiveFolderPath = self.GetLiveFolderPath()
 
 
@@ -35,12 +34,15 @@ class TaskTracker:
         #todo : add RE_Suite service etc
         
 
-    def GetUpdateFolderPath(self):
+    def GetUpdateFolderPath(self, timestamp):
+        
         if self.Program == Programs.Client:
-            return ClientSoftwareUpdateFolderPaths[self.Environment]
+            updatefolderbase = ClientSoftwareUpdateFolderPaths[self.Environment]
         elif self.Program == Programs.WebService:
-            return WebServiceUpdateFolderPaths[self.Environment]
+            updatefolderbase = WebServiceUpdateFolderPaths[self.Environment]
         #todo : add RE_Suite service etc
+
+        return os.path.join(updatefolderbase, timestamp)
 
     def GetServer(self):
         for server in Servers:
