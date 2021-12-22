@@ -19,10 +19,10 @@ class TaskData:
         self.HasZipBeenCopiedToServer = False
 
         #first initialisation
-        programId, envId = taskId.split(".")
+        programId, envId, versionId = taskId.split(".")
         self.Program = Programs(int(programId))
         self.Environment = Environments(int(envId))
-        self.Version = self.GetVersion()
+        self.Version = Versions(int(versionId))
         self.LiveFolderPath = self.GetLiveFolderPath()
         self.Server = self.GetServer()
 
@@ -48,6 +48,7 @@ class TaskData:
                 return server
 
     def GetVersion(self):
+        # this is incorrect because for ayn client we could want to release prerelease or release
         if "PreRelease" in str(self.Environment):
             return Versions.PreRelease
         else:

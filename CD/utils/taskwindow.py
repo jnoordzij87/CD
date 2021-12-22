@@ -140,13 +140,27 @@ class TaskWindow:
         tree.insert("", "end", "1", text="Client")
         #make subnodes for environment 
         for env in Environments:
-            tree.insert("1", "end", "1."+str(env.value), text=str(env.name))
+            envnumber = str(env.value)
+            envname = str(env.name)
+            tree.insert("1", "end", "1."+ envnumber, text = envname)
+            for vrs in Versions:
+                vrsNumber = str(vrs.value)
+                vrsName = str(vrs.name)
+                parent = "1."+ envnumber
+                tree.insert(parent, "end", parent + "." + vrsNumber, text = vrsName)
 
         #make node for webservice
         tree.insert("", "end", "2", text="WebService")
         #make subnodes for environments
         for env in Environments:
-            tree.insert("2", "end", "2."+str(env.value), text=str(env.name))
+            envnumber = str(env.value)
+            envname = str(env.name)
+            tree.insert("2", "end", "2."+ envnumber, text = envname)
+            for vrs in Versions:
+                vrsNumber = str(vrs.value)
+                vrsName = str(vrs.name)
+                parent = "2."+ envnumber
+                tree.insert(parent, "end", parent + "." + vrsNumber, text = vrsName)
         
     def GetCheckedTasks(self, tree):
         checked = []
