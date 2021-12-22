@@ -41,9 +41,9 @@ ClientSoftwareLiveFolderPaths = {
             }
             
 ClientSoftwareUpdateFolderPaths = {
-            Environments.HbR : r"\\daps-ts-2\DEMO\Havenbedrijf\Updates_TestJNO",
+            Environments.HbR : r"\\daps-ts-2\DEMO\Havenbedrijf\Updates",
             Environments.Stek : r"\\daps-ts-2\DEMO\Stek\Updates",
-            Environments.Monumentenwacht: r"\\daps-ts-2\DEMO\Monumentenwacht\RE_Suite_TestJNO",
+            Environments.Monumentenwacht: r"\\daps-ts-2\DEMO\Monumentenwacht\Updates",
             Environments.DemoSecureRelease : r"\\daps-ts-2\DEMO\Demonstratie\Updates\_Release",
             Environments.DemoSecurePreRelease : r"\\daps-ts-2\DEMO\Demonstratie\Updates\_PreRelease",
             Environments.DemoDemoRelease : r"\\demo-ts-2\DEMO\Demonstratie\Updates\_Release",
