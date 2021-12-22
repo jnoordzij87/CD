@@ -9,8 +9,9 @@ from utils.zipFilters import *
 
 class ZipBuilder:
     
-    def __init__(self, tasks):
+    def __init__(self, tasks, starttime):
         self.Tasks = tasks
+        self.StartTime = starttime
     
     def CreateZipFiles(self):
         for task in self.Tasks:
@@ -47,8 +48,8 @@ class ZipBuilder:
         #only necessary if there is not already a task that has created a zipfile for the same program and version  
         for task in self.Tasks:
             sameProgram = task.Program == thistask.Program
-            sameVersion = task.Version == thistask.Verion
-            if task.HasACreatedZipfile and sameProgram and sameVersion:
+            sameVersion = task.Version == thistask.Version
+            if task.HasCreatedZip and sameProgram and sameVersion:
                 #zip already available
                 return False, task.ZipFileCopySrcPath
         #if we are here, zip doesnt exist yet

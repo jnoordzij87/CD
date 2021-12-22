@@ -4,6 +4,7 @@ import os
         
 def FilterDir(taskObj):
     print('Collecting files to zip for {} {}...'.format(taskObj.Program, taskObj.Version))
+    program = taskObj.Program
     result = []
     if program == str(Programs.Client):
         result = FilterDirForClientSoftware(task.BinSourcePath)

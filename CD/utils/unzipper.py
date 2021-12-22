@@ -6,7 +6,7 @@ class Unzipper:
 
         unzipSrc = task.ZipFileCopyDstPath
         unzipDst = task.UpdateFolderPath
-        server = task.Server
+        server = task.Server.value
 
         print('Proceeding to unzip in update folder: ', task.Program, task.Environment)
         print('Sending unzip command to server...')

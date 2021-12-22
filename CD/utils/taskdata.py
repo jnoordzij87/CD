@@ -1,4 +1,5 @@
 from utils.paths import *
+import os
 
 class TaskData:
 
@@ -22,8 +23,8 @@ class TaskData:
         self.Program = Programs(int(programId))
         self.Environment = Environments(int(envId))
         self.Version = self.GetVersion()
-        self.Server = self.GetServer()
         self.LiveFolderPath = self.GetLiveFolderPath()
+        self.Server = self.GetServer()
 
     def GetLiveFolderPath(self):
         if self.Program == Programs.Client:
@@ -42,7 +43,8 @@ class TaskData:
 
     def GetServer(self):
         for server in Servers:
-            if server.value in self.LiveFolderPath: #this is probably not entirely safe
+            #this is probably not entirely safe
+            if server.value in self.LiveFolderPath: 
                 return server
 
     def GetVersion(self):

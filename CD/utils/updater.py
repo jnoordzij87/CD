@@ -20,18 +20,18 @@ class Updater:
         if not self.TestVPN():
             return
         #create ZIP files 
-        zipBuilderObj = ZipBuilder(tasks)
+        zipBuilderObj = ZipBuilder(tasks, self.StartTime)
         zipBuilderObj.CreateZipFiles()
         #execute task on server 
         for task in self.Tasks:
-           task = self.ExecuteTaskOnServer(taskId)
+           self.ExecuteTaskOnServer(task)
         print('All tasks completed.')
 
     def ExecuteTaskOnServer(self, task):
         print('Starting distribution for', task.Program, task.Environment)
         #get updatefolderpath and zipfilepath from timestamp
-        task.UpdateFolderPath = task.GetUpdateFolderPath(timeSuffix)
-        task.ZipFileCopyDstPath = os.path.join(updateFolder, os.path.basename(task.ZipFileCopySrcPath))
+        task.UpdateFolderPath = task.GetUpdateFolderPath(self.StartTime)
+        task.ZipFileCopyDstPath = os.path.join(task.UpdateFolderPath, os.path.basename(task.ZipFileCopySrcPath))
         #copy zip to server, but only once per program/version/server
         #i.e. if 2 envs on 1 server need the same binaries, copy zip once and use for both envs
         copiedBefore, fileToUnzip = self.HasProgramBeenCopiedToServer(task)
@@ -56,13 +56,13 @@ class Updater:
     def HasProgramBeenCopiedToServer(self, thistask):
         for task in self.Tasks:
             sameProgram = task.Program == thistask.Program
-            sameVersion = task.Version == thistask.Verion
+            sameVersion = task.Version == thistask.Version
             sameServer = task.Server == thistask.Server
             if task.HasZipBeenCopiedToServer and sameProgram and sameVersion and sameServer:
                 #found match
-                return true, task.ZipFileCopyDstPath
+                return True, task.ZipFileCopyDstPath
         #if we are here, no match
-        return false, None
+        return False, None
 
     def CopyZipToServer(self, task):
         copysrc = task.ZipFileCopySrcPath
