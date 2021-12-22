@@ -3,8 +3,6 @@ import os
 from utils.paths import *
 from zipfile import ZipFile
 import zipfile
-import glob
-from shutil import *
 import subprocess
 from subprocess import *
 from utils.unzipper import *

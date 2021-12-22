@@ -1,5 +1,4 @@
 from utils.paths import Programs
-from pprint import pprint
 import os
         
 def FilterDir(task):
