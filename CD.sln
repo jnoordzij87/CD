@@ -5,11 +5,6 @@ VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "CD", "CD\CD.pyproj", "{40EAF8D4-ACBD-4A3A-9B26-80F6B0EF77CC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C06FE15B-BEDF-45FA-B09C-FDE4C41D0740}"
-	ProjectSection(SolutionItems) = preProject
-		CD\README.md = CD\README.md
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
