@@ -14,7 +14,7 @@ class Unzipper:
         print('Dst: ', unzipDst)
 
         #get path to unzip.bat
-        batpath = r"c:\users\josn\desktop\cd\unzip.bat"
+        batpath = os.path.join(os.path.dirname(__file__), 'unzip.bat')
         
         #call unzip bat, which does powershell unzip on server
         cmd = r"%s %s %s %s" % (batpath, unzipSrc, unzipDst, server)
