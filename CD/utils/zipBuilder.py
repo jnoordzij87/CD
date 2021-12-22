@@ -17,13 +17,12 @@ class ZipBuilder:
         for task in self.Tasks:
             isZippingNecessary, zipSrcPath = self.IsMakingZipFileNecessary(task)
             if isZippingNecessary:
-                binarysource = task.BinSourcePath
                 #get files to zip
                 filesToZip = FilterDir(task)
                 #create zip
                 zipFile = self.CreateZipFile(task, filesToZip)
                 #register that zip has been made for this task
-                task.HasACreatedZipfile = True
+                task.HasCreatedZip = True
                 #store reference to zipfile location
                 task.ZipFileCopySrcPath = zipFile.filename
             else:
@@ -37,7 +36,7 @@ class ZipBuilder:
         zf = ZipFile(zipfilepath, 'w')
         for file in filesToZip:
             #get archivename (i.e. filepath without zip root)
-            archivename = file.split(sourcepath)[-1]
+            archivename = file.split(task.BinSourcePath)[-1]
             #add to zip 
             zf.write(file, archivename) 
         zf.close()

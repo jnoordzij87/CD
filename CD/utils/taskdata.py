@@ -13,6 +13,7 @@ class TaskData:
         self.BinSourcePath = None
         self.UpdateFolderPath = None
         self.LiveFolderPath = None
+        self.ZipFileCopyBasePath = None
         self.ZipFileCopySrcPath = None
         self.ZipFileCopyDstPath = None
         self.HasCreatedZip = False
